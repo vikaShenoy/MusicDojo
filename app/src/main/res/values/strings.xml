@@ -3,4 +3,9 @@
     <string name="menu_schedule">Schedule</string>
     <string name="menu_metronome">Metronome</string>
     <string name="menu_timer">Timer</string>
+
+    <string name="name">Name</string>
+    <string name="description">Description</string>
+    <string name="bpm">BPM</string>
+    <string name="targetBpm">Target BPM</string>
 </resources>

@@ -8,4 +8,11 @@
     <string name="description">Description</string>
     <string name="bpm">BPM</string>
     <string name="targetBpm">Target BPM</string>
+
+    <string name="exercises">Exercises</string>
+    <string name="schedule">Schedule</string>
+
+    <string name="create">Create</string>
+    <string name="create_exercise">Create Exercise</string>
+    <string name="create_schedule">Create Schedule</string>
 </resources>

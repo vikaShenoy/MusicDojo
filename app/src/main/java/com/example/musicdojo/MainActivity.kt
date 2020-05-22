@@ -26,14 +26,14 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             supportFragmentManager
         )
 
-        mainPagerAdapter.setItems(arrayListOf(MainScreen.SCHEDULE,
-            MainScreen.COMPARE, MainScreen.PERFORMANCE))
+        mainPagerAdapter.setItems(arrayListOf(MainScreen.TRAINING,
+            MainScreen.METRONOME, MainScreen.TIMER))
 
-        val defaultScreen = MainScreen.SCHEDULE
+        val defaultScreen = MainScreen.TRAINING
         scrollToScreen(defaultScreen)
         selectBottomNavigationViewMenuItem(defaultScreen.menuItemId)
         supportActionBar?.setTitle(defaultScreen.titleStringId)
-        supportActionBar?.hide()
+//        supportActionBar?.hide()
 
         // Listener for item selection in bottom nav menu
         bottomNavigationView.setOnNavigationItemSelectedListener(this)

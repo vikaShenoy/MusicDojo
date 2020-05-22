@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 
-class ScheduleFragment : Fragment() {
+class TrainingFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,7 +32,7 @@ class ScheduleFragment : Fragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            ScheduleFragment().apply {
+            TrainingFragment().apply {
                 arguments = Bundle().apply {
                 }
             }

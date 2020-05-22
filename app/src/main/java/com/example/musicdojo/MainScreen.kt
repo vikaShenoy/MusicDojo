@@ -15,16 +15,16 @@ enum class MainScreen(
     @StringRes val titleStringId: Int,
     val fragment: Fragment
 ) {
-    SCHEDULE(
-        R.id.bottom_navigation_schedule, R.drawable.ic_schedule,
-        R.string.menu_schedule,
-        ScheduleFragment()
+    TRAINING(
+        R.id.bottom_navigation_training, R.drawable.ic_training,
+        R.string.menu_training,
+        TrainingFragment()
     ),
-    COMPARE(
+    METRONOME(
         R.id.bottom_navigation_metronome, R.drawable.ic_metronome,
         R.string.menu_metronome, MetronomeFragment()
     ),
-    PERFORMANCE(
+    TIMER(
         R.id.bottom_navigation_timer, R.drawable.ic_timer,
         R.string.menu_timer, TimerFragment()
     )

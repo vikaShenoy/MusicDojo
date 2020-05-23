@@ -1,5 +1,7 @@
 package com.example.musicdojo
 
+import android.animation.AnimatorInflater
+import android.animation.AnimatorSet
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -36,7 +38,9 @@ class TrainingFragment : Fragment(), SensorEventListener {
 
     private lateinit var accelerometer: Sensor
     private val SHAKE_TIMEOUT = 500
-    private val SHAKE_THRESHOLD = 3.25f
+    private val SHAKE_THRESHOLD = 4.0f
+    private val NUM_SHAKES = 3
+    private var shakeCount = 0
 
     private var lastShakeTime: Long = 0
 
@@ -74,11 +78,19 @@ class TrainingFragment : Fragment(), SensorEventListener {
 
         startBtn.setOnClickListener {
             vibrate(500)
+
             val testGame = Game("Intervals", ctx, Mode.INTERVAL, 5)
             startGame(testGame)
         }
 
         selectAnswerBtn.setOnClickListener {
+            val animationSet: AnimatorSet =
+                AnimatorInflater.loadAnimator(
+                    ctx,
+                    R.animator.bounce
+                ) as AnimatorSet
+            animationSet.setTarget(it)
+            animationSet.start()
             answerSelected()
         }
 
@@ -89,6 +101,7 @@ class TrainingFragment : Fragment(), SensorEventListener {
         }
 
         replayBtn.visibility = View.INVISIBLE
+        selectAnswerBtn.visibility = View.INVISIBLE
     }
 
     private fun vibrate(length: Long) {
@@ -102,19 +115,21 @@ class TrainingFragment : Fragment(), SensorEventListener {
     }
 
     private fun answerSelected() {
-        game.submitAnswer(INTERVALS[intervalSpinner.selectedItem])
-        intervalSpinner.setSelection(0)
+        if (gameActive) {
+            game.submitAnswer(INTERVALS[intervalSpinner.selectedItem])
+            intervalSpinner.setSelection(0)
 
-        if (game.isFinished()) {
-            finishGame()
-        } else {
-            questionText.text =
-                getString(
-                    R.string.question,
-                    game.currentQuestionIdx + 1,
-                    game.numQuestions
-                )
-            playSounds(game.getCurrentQuestion())
+            if (game.isFinished()) {
+                finishGame()
+            } else {
+                questionText.text =
+                    getString(
+                        R.string.question,
+                        game.currentQuestionIdx + 1,
+                        game.numQuestions
+                    )
+                playSounds(game.getCurrentQuestion())
+            }
         }
     }
 
@@ -126,12 +141,16 @@ class TrainingFragment : Fragment(), SensorEventListener {
             getString(R.string.question, game.currentQuestionIdx + 1, game.numQuestions)
         replayBtn.visibility = View.VISIBLE
         startBtn.visibility = View.INVISIBLE
+        selectAnswerBtn.visibility = View.VISIBLE
         intervalSpinner.setSelection(0)
         playSounds(game.getCurrentQuestion())
     }
 
     private fun finishGame() {
         gameActive = false
+        selectAnswerBtn.visibility = View.INVISIBLE
+        startBtn.visibility = View.VISIBLE
+        replayBtn.visibility = View.INVISIBLE
         Toast.makeText(ctx, "Score: ${game.score}", Toast.LENGTH_SHORT).show()
     }
 
@@ -146,6 +165,9 @@ class TrainingFragment : Fragment(), SensorEventListener {
             mediaPlayer.release()
             mediaPlayer = MediaPlayer.create(ctx, question.soundTwo)
             mediaPlayer.start()
+            mediaPlayer.setOnCompletionListener {
+                mediaPlayer.release()
+            }
         }
     }
 
@@ -179,32 +201,21 @@ class TrainingFragment : Fragment(), SensorEventListener {
                 val x = event.values[0]
                 val y = event.values[1]
                 val z = event.values[2]
-
-                Log.i("poo", x.toString())
-
                 val currentShakeTime = System.currentTimeMillis()
 
-                val accel = sqrt((x * x) + (y * y) + (z * z)) - SensorManager.GRAVITY_EARTH
-                Log.i("Test", "Accel=$accel")
-
-                if (accel > SHAKE_THRESHOLD) {
-                    if (gameActive) {
-                        playSounds(game.getCurrentQuestion())
+                if (currentShakeTime - lastShakeTime > SHAKE_TIMEOUT) {
+                    val diffTime = currentShakeTime - lastShakeTime
+                    val accel = sqrt((x * x) + (y * y) + (z * z)) - SensorManager.GRAVITY_EARTH
+                    if (accel > SHAKE_THRESHOLD && gameActive) {
+                        lastShakeTime = currentShakeTime
+                        Log.i("test", "zoo")
+                        shakeCount += 1
+                        if (shakeCount >= NUM_SHAKES) {
+                            playSounds(game.getCurrentQuestion())
+                            shakeCount = 0
+                        }
                     }
                 }
-
-
-//                if (currentShakeTime - lastShakeTime < SHAKE_TIMEOUT) {
-//                    val accel = sqrt((x * x) + (y * y) + (z * z)) - SensorManager.GRAVITY_EARTH
-//                    Log.i("Test", "Accel=$accel")
-//
-//                    if (accel > SHAKE_THRESHOLD) {
-//                        playSounds(game.getCurrentQuestion())
-//                        lastShakeTime = currentShakeTime
-//                    }
-//
-//                }
-
 
             }
         }

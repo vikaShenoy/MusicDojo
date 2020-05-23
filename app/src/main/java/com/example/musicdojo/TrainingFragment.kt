@@ -19,7 +19,7 @@ class TrainingFragment : Fragment() {
 
     private lateinit var ctx: Context
 
-    private var playing : Boolean = false
+    private lateinit var game: Game
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,34 +40,41 @@ class TrainingFragment : Fragment() {
             ctx,
             R.array.intervals,
             android.R.layout.simple_spinner_dropdown_item
-        ).also {adapter ->
+        ).also { adapter ->
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             intervalSpinner.adapter = adapter
         }
 
-        startBtn.setOnClickListener{
-            val testGame = Game("Interval", ctx, Mode.INTERVAL, 5, 0)
+        startBtn.setOnClickListener {
+            val testGame = Game("Interval", ctx, Mode.INTERVAL, 5)
             startGame(testGame)
         }
 
-        selectAnswerBtn.setOnClickListener{
+        selectAnswerBtn.setOnClickListener {
             answerSelected()
         }
     }
 
     private fun answerSelected() {
-        // Get the interval selected from the dropdown box
-        // Check it against the current question
-        // Alter the player's score
-        // Check if the game is finished
-        // Alter the displayed text
-        // Play the sounds
+        game.submitAnswer(INTERVALS[intervalSpinner.selectedItem])
+
+        questionText.text = getString(R.string.question, game.currentQuestionIdx, game.numQuestions)
+        if (game.isFinished()) {
+            finishGame()
+        } else {
+            playSounds(game.getCurrentQuestion())
+        }
     }
 
-    private fun startGame(game: Game) {
+    private fun startGame(newGame: Game) {
+        game = newGame
         gameNameText.text = game.name
-        questionText.text = getString(R.string.question, game.currentQuestion, game.numQuestions)
-        playing = true
+        questionText.text = getString(R.string.question, game.currentQuestionIdx, game.numQuestions)
+        playSounds(game.getCurrentQuestion())
+    }
+
+    private fun finishGame() {
+        Toast.makeText(ctx, "Score: ${game.score}", Toast.LENGTH_SHORT).show()
     }
 
     /**
@@ -75,7 +82,8 @@ class TrainingFragment : Fragment() {
      * @param question: contains the ID for the two tones to play.
      */
     private fun playSounds(question: Question) {
-        var mediaPlayer : MediaPlayer = MediaPlayer.create(ctx, question.soundOne)
+        var mediaPlayer: MediaPlayer = MediaPlayer.create(ctx, question.soundOne)
+        mediaPlayer.start()
         mediaPlayer.setOnCompletionListener {
             mediaPlayer.release()
             mediaPlayer = MediaPlayer.create(ctx, question.soundTwo)

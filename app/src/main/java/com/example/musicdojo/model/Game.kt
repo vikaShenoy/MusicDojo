@@ -9,12 +9,11 @@ class Game(
     val name: String,
     val ctx: Context,
     val mode: Mode = Mode.INTERVAL,
-    val numQuestions: Int = 0,
-    val currentQuestion: Int = 0
+    val numQuestions: Int
 ) {
-    init {
-        val questions: List<Question> = generateQuestions(this.mode, this.numQuestions)
-    }
+    val questions: List<Question> = generateQuestions()
+    var currentQuestionIdx: Int = 0
+    var score: Int = 0
 
     // TODO - support other modes
     /**
@@ -23,7 +22,7 @@ class Game(
      * @param numQuestions: how many questions to generate
      * @return list of questions.
      */
-    private fun generateQuestions(mode: Mode, numQuestions: Int): List<Question> {
+    private fun generateQuestions(): List<Question> {
         val questions: MutableList<Question> = ArrayList<Question>()
 
         for (i in 0..numQuestions) {
@@ -56,5 +55,23 @@ class Game(
      */
     private fun Random.nextInt(range: IntRange): Int {
         return range.first + nextInt(range.last - range.first)
+    }
+
+    fun submitAnswer(answer: Int?) {
+        if (questions[currentQuestionIdx].answer == answer) {
+            score += 1
+        }
+        currentQuestionIdx += 1
+    }
+
+    fun isFinished() : Boolean {
+        if (currentQuestionIdx >= numQuestions) {
+            return true
+        }
+        return false
+    }
+
+    fun getCurrentQuestion() : Question {
+        return questions[currentQuestionIdx]
     }
 }

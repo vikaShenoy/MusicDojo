@@ -8,6 +8,7 @@
     <string name="confirm">Confirm</string>
 
     <string name="start">Start</string>
+    <string name="replay">Replay Sound</string>
 
     <string name="score">%1$d / %2$d</string>
 
@@ -21,7 +22,7 @@
     <string name="per4">Perfect 4th</string>
     <string name="dim5">Diminished 5th</string>
     <string name="per5">Perfect 5th</string>
-    <string name="min6">Minor 6th></string>
+    <string name="min6">Minor 6th</string>
     <string name="maj6">Major 6th</string>
     <string name="min7">Minor 7th</string>
     <string name="maj7">Major 7th</string>

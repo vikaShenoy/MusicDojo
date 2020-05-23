@@ -1,6 +1,7 @@
 package com.example.musicdojo.model
 
 import android.content.Context
+import android.util.Log
 import com.example.musicdojo.R
 import java.util.*
 import kotlin.collections.ArrayList
@@ -59,6 +60,7 @@ class Game(
 
     fun submitAnswer(answer: Int?) {
         if (questions[currentQuestionIdx].answer == answer) {
+            Log.i("answer", "ye")
             score += 1
         }
         currentQuestionIdx += 1

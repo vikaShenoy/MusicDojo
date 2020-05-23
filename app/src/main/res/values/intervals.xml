@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="intervals">
+        <item> </item>
         <item>@string/min2</item>
         <item>@string/maj2</item>
         <item>@string/min3</item>
         <item>@string/maj3</item>
         <item>@string/per4</item>
+        <item>@string/dim5</item>
         <item>@string/per5</item>
         <item>@string/min6</item>
         <item>@string/maj6</item>

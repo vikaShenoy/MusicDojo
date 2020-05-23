@@ -3,10 +3,12 @@ package com.example.musicdojo
 import android.content.Context
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.musicdojo.model.Game
 import com.example.musicdojo.model.Mode
@@ -44,22 +46,28 @@ class TrainingFragment : Fragment() {
         }
 
         startBtn.setOnClickListener{
-            val testGame = Game("Interval", 5, Mode.INTERVAL)
-            playGame(testGame)
+            val testGame = Game("Interval", ctx, Mode.INTERVAL, 5, 0)
+            startGame(testGame)
+        }
+
+        selectAnswerBtn.setOnClickListener{
+            answerSelected()
         }
     }
 
-    private fun playGame(game: Game) {
-        var currentScore: Int = 0
+    private fun answerSelected() {
+        // Get the interval selected from the dropdown box
+        // Check it against the current question
+        // Alter the player's score
+        // Check if the game is finished
+        // Alter the displayed text
+        // Play the sounds
+    }
+
+    private fun startGame(game: Game) {
         gameNameText.text = game.name
-
+        questionText.text = getString(R.string.question, game.currentQuestion, game.numQuestions)
         playing = true
-
-        for (n in 1..game.numQuestions) {
-            scoreText.text = getString(R.string.score, currentScore, game.numQuestions)
-            val question = generateQuestion(game.mode)
-            playSounds(question)
-        }
     }
 
     /**
@@ -70,20 +78,9 @@ class TrainingFragment : Fragment() {
         var mediaPlayer : MediaPlayer = MediaPlayer.create(ctx, question.soundOne)
         mediaPlayer.setOnCompletionListener {
             mediaPlayer.release()
-            mediaPlayer = MediaPlayer.create(ctx, R.raw.two)
+            mediaPlayer = MediaPlayer.create(ctx, question.soundTwo)
             mediaPlayer.start()
         }
-    }
-
-    /**
-     * Randomly select two tones based on the game type.
-     * @param mode: Mode of the game (interval, pitch, chords)
-     * @return question: Question object with the two tones to be
-     * played and the answer to the question.
-     */
-    private fun generateQuestion(mode: Mode): Question {
-        //TODO - implement this based on different modes
-        return Question(R.raw.one, R.raw.two, 5)
     }
 
 

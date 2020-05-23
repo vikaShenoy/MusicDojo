@@ -46,7 +46,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/scoreText"
+        android:id="@+id/questionText"
         android:layout_width="233dp"
         android:layout_height="66dp"
         android:layout_marginTop="32dp"
@@ -66,6 +66,6 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scoreText" />
+        app:layout_constraintTop_toBottomOf="@+id/questionText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

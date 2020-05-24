@@ -12,7 +12,12 @@
 
     <string name="score">%1$d / %2$d</string>
 
+    <string name="save_score">Save Score</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+
     <string name="question">Question: %1$d / %2$d</string>
+
 
 
     <string name="min2">Minor 2nd</string>

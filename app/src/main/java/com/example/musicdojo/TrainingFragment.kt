@@ -12,37 +12,41 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
-import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.example.musicdojo.database.GameResultAdapter
 import com.example.musicdojo.model.Game
 import com.example.musicdojo.model.Mode
 import com.example.musicdojo.model.Question
+import com.example.musicdojo.model.GameResult
 import kotlinx.android.synthetic.main.fragment_training.*
-import java.lang.Math.sqrt
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.logging.SimpleFormatter
 import kotlin.math.sqrt
 
 class TrainingFragment : Fragment(), SensorEventListener {
 
     private lateinit var ctx: Context
     private lateinit var game: Game
-
-    private var gameActive = false
-
     private lateinit var mSensorManager: SensorManager
-
     private lateinit var accelerometer: Sensor
+    private lateinit var gameResultAdapter: GameResultAdapter
+
     private val SHAKE_TIMEOUT = 500
     private val SHAKE_THRESHOLD = 4.0f
     private val NUM_SHAKES = 3
     private var shakeCount = 0
-
     private var lastShakeTime: Long = 0
+
+    private var gameActive = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,11 +59,10 @@ class TrainingFragment : Fragment(), SensorEventListener {
         mSensorManager = ctx.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER).let {
             accelerometer = it
-            mSensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
+            mSensorManager.registerListener(this, accelerometer,
+                SensorManager.SENSOR_DELAY_NORMAL)
         }
-
-
-
+        gameResultAdapter = GameResultAdapter(ctx)
         return inflater.inflate(R.layout.fragment_training, container, false)
     }
 
@@ -102,8 +105,13 @@ class TrainingFragment : Fragment(), SensorEventListener {
 
         replayBtn.visibility = View.INVISIBLE
         selectAnswerBtn.visibility = View.INVISIBLE
+        intervalSpinner.visibility = View.INVISIBLE
     }
 
+    /**
+     * Vibrate the device.
+     * @param length: How many milliseconds the vibration should last
+     */
     private fun vibrate(length: Long) {
         val vibrator =
             ctx.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
@@ -114,6 +122,10 @@ class TrainingFragment : Fragment(), SensorEventListener {
         )
     }
 
+    /**
+     * Callback for when the user locks in an answer to the current question.
+     * Progresses to the next question or finishes the game if there are no more.
+     */
     private fun answerSelected() {
         if (gameActive) {
             game.submitAnswer(INTERVALS[intervalSpinner.selectedItem])
@@ -133,25 +145,104 @@ class TrainingFragment : Fragment(), SensorEventListener {
         }
     }
 
+    /**
+     * Initialise a new game.
+     * Change the state to game active and sound the first question.
+     * @param newGame: game object which is now active.
+     */
     private fun startGame(newGame: Game) {
         game = newGame
         gameActive = true
+        flipButtons()
+
         gameNameText.text = game.name
         questionText.text =
             getString(R.string.question, game.currentQuestionIdx + 1, game.numQuestions)
-        replayBtn.visibility = View.VISIBLE
-        startBtn.visibility = View.INVISIBLE
-        selectAnswerBtn.visibility = View.VISIBLE
         intervalSpinner.setSelection(0)
         playSounds(game.getCurrentQuestion())
     }
 
+    /**
+     * Called when the last question of the game in answered.
+     * Open a score dialog and provide func to save the result to
+     * Room DB if the user wants.
+     */
     private fun finishGame() {
         gameActive = false
-        selectAnswerBtn.visibility = View.INVISIBLE
-        startBtn.visibility = View.VISIBLE
-        replayBtn.visibility = View.INVISIBLE
-        Toast.makeText(ctx, "Score: ${game.score}", Toast.LENGTH_SHORT).show()
+        flipButtons()
+
+        val scoreDialog = createScoreDialog(game) {
+            val result: GameResult = GameResult(
+                game.mode.toString(),
+                (game.score / game.numQuestions).toFloat(),
+                getDate("dd/MM/yyyy")
+            )
+            gameResultAdapter.insert(gameResult = result)
+        }
+        scoreDialog.show()
+    }
+
+    /**
+     * Return the current date.
+     * @param pattern: String pattern for the date to be formatted in.
+     * @return formatted current date string.
+     */
+    private fun getDate(pattern: String): String {
+        val currentDate = Calendar.getInstance().time
+        val formatter = SimpleDateFormat(pattern)
+        return formatter.format(currentDate)
+    }
+
+
+    /**
+     * Create a dialog for displaying the user's game result.
+     * @param game: Game the user just played. Has score as a property.
+     * @param onSave: callback to be done when the user clicks the save score button.
+     * @return an AlertDialog popup.
+     */
+    private fun createScoreDialog(game: Game, onSave: () -> Unit): android.app.AlertDialog {
+        val scoreView = layoutInflater.inflate(R.layout.save_score, null)
+
+        val gameNameTxt = scoreView.findViewById<TextView>(R.id.saveGameNameTxt)
+        val scoreTxt = scoreView.findViewById<TextView>(R.id.saveScoreTxt)
+        val saveBtn = scoreView.findViewById<Button>(R.id.saveScoreBtn)
+        val cancelBtn = scoreView.findViewById<Button>(R.id.cancelBtn)
+
+        gameNameTxt.text = game.name
+        scoreTxt.text = resources.getString(R.string.score, game.score, game.numQuestions)
+        saveBtn.setOnClickListener {
+            onSave()
+        }
+
+        val dialogBuilder: android.app.AlertDialog.Builder = android.app.AlertDialog.Builder(ctx)
+        dialogBuilder.setView(scoreView)
+        val dialog = dialogBuilder.create()
+        cancelBtn.setOnClickListener {
+            dialog.dismiss()
+        }
+        return dialog
+    }
+
+    /**
+     * Toggle the widgets which are visible based on whether the user is playing
+     * a game currently or not.
+     */
+    private fun flipButtons() {
+        if (gameActive) {
+            questionText.visibility = View.VISIBLE
+            gameNameText.visibility = View.VISIBLE
+            replayBtn.visibility = View.VISIBLE
+            selectAnswerBtn.visibility = View.VISIBLE
+            intervalSpinner.visibility = View.VISIBLE
+            startBtn.visibility = View.INVISIBLE
+        } else {
+            questionText.visibility = View.INVISIBLE
+            gameNameText.visibility = View.INVISIBLE
+            replayBtn.visibility = View.INVISIBLE
+            selectAnswerBtn.visibility = View.INVISIBLE
+            intervalSpinner.visibility = View.INVISIBLE
+            startBtn.visibility = View.VISIBLE
+        }
     }
 
     /**

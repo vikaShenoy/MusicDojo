@@ -3,6 +3,7 @@ package com.example.musicdojo
 import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.content.Context
+import android.content.SharedPreferences
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -23,6 +24,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import com.example.musicdojo.database.GameResultAdapter
 import com.example.musicdojo.model.Game
 import com.example.musicdojo.model.Mode
@@ -35,7 +37,7 @@ import java.util.*
 import java.util.logging.SimpleFormatter
 import kotlin.math.sqrt
 
-class TrainingFragment : Fragment(), SensorEventListener, Toolbar.OnMenuItemClickListener {
+class TrainingFragment : Fragment(), SensorEventListener {
 
     private lateinit var ctx: Context
     private lateinit var game: Game
@@ -51,6 +53,8 @@ class TrainingFragment : Fragment(), SensorEventListener, Toolbar.OnMenuItemClic
 
     private var gameActive = false
     private var mediaPlayer: MediaPlayer? = null
+
+    private lateinit var prefs : SharedPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,14 +73,8 @@ class TrainingFragment : Fragment(), SensorEventListener, Toolbar.OnMenuItemClic
             )
         }
         gameResultAdapter = GameResultAdapter(ctx)
+        prefs = PreferenceManager.getDefaultSharedPreferences(ctx)
         return inflater.inflate(R.layout.fragment_training, container, false)
-    }
-
-    override fun onMenuItemClick(item: MenuItem?): Boolean {
-        if (item?.itemId == R.id.settings) {
-            Log.i("test", "poo")
-        }
-        return true
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -94,9 +92,12 @@ class TrainingFragment : Fragment(), SensorEventListener, Toolbar.OnMenuItemClic
 
         startBtn.setOnClickListener {
             vibrate(500)
-
-            val testGame = Game("Intervals", ctx, Mode.INTERVAL, 5)
-            startGame(testGame)
+            val modeName = prefs.getString("selected_mode", MODE_DEFAULT)
+            val n: Int? = prefs.getString("num_questions", NUM_QUESTIONS_DEFAULT)?.toInt()
+            val mode = MODES[modeName]
+            if (mode != null && modeName != null && n != null) {
+                startGame(Game(modeName, ctx, mode, n))
+            }
         }
 
         selectAnswerBtn.setOnClickListener {
@@ -120,6 +121,15 @@ class TrainingFragment : Fragment(), SensorEventListener, Toolbar.OnMenuItemClic
         selectAnswerBtn.visibility = View.INVISIBLE
         intervalSpinner.visibility = View.INVISIBLE
     }
+
+    /**
+     * Release the media player if the user exits the activity.
+     */
+    override fun onStop() {
+        super.onStop()
+        releasePlayer()
+    }
+
 
     /**
      * Vibrate the device.

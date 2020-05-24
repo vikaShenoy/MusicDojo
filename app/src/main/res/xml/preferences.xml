@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <DropDownPreference
+        android:title="Mode"
+        android:defaultValue="Intervals"
+        android:key="selected_mode"
+        android:summary="Ear training mode for the game"
+        android:singleLine="true"
+        android:icon="@drawable/ic_mode"
+        android:entries="@array/modes"
+        android:entryValues="@array/modes"
+        />
+
+    <EditTextPreference
+        android:title="Questions"
+        android:defaultValue="5"
+        android:inputType="number"
+        android:key="num_questions"
+        android:summary="Number of questions in the game"
+        android:singleLine="true"
+        android:icon="@drawable/num_questions"
+        app:defaultValue="@string/interval"
+        />
+
+</PreferenceScreen>

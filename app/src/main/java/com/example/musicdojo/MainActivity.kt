@@ -1,5 +1,6 @@
 package com.example.musicdojo
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -89,6 +90,16 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.toolbar_items, menu)
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when(item.itemId) {
+        R.id.settings -> {
+            startActivity(Intent(this, SettingsActivity::class.java))
+            true
+        }
+        else -> {
+            true
+        }
     }
 
 

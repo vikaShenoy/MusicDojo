@@ -1,5 +1,7 @@
 package com.example.musicdojo
 
+import com.example.musicdojo.model.Mode
+
 val INTERVALS = mapOf<String, Int>(
     "Minor 2nd" to 1,
     "Major 2nd" to 2,
@@ -14,3 +16,12 @@ val INTERVALS = mapOf<String, Int>(
     "Major 7th" to 11,
     "Octave" to 12
 )
+
+val MODES = mapOf<String, Mode>(
+    "Intervals" to Mode.INTERVAL,
+    "Pitches" to Mode.PITCH,
+    "Chords" to Mode.CHORD
+)
+
+val MODE_DEFAULT = "Intervals"
+val NUM_QUESTIONS_DEFAULT = "5"

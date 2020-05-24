@@ -2,11 +2,15 @@ package com.example.musicdojo
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.annotation.IdRes
 import androidx.viewpager.widget.ViewPager
 import com.example.musicdojo.MainPagerAdapter
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.synthetic.main.activity_main.*
 
 /**
  * Main activity. Intialise bottom navigation.
@@ -32,8 +36,10 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         val defaultScreen = MainScreen.TRAINING
         scrollToScreen(defaultScreen)
         selectBottomNavigationViewMenuItem(defaultScreen.menuItemId)
+
+
+        setSupportActionBar(toolbar)
         supportActionBar?.setTitle(defaultScreen.titleStringId)
-//        supportActionBar?.hide()
 
         // Listener for item selection in bottom nav menu
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
@@ -79,6 +85,13 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         }
         return false
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.toolbar_items, menu)
+        return true
+    }
+
+
 
 }
 

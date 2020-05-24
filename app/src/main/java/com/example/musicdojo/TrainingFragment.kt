@@ -13,6 +13,7 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -20,19 +21,21 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.example.musicdojo.database.GameResultAdapter
 import com.example.musicdojo.model.Game
 import com.example.musicdojo.model.Mode
 import com.example.musicdojo.model.Question
 import com.example.musicdojo.model.GameResult
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_training.*
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.logging.SimpleFormatter
 import kotlin.math.sqrt
 
-class TrainingFragment : Fragment(), SensorEventListener {
+class TrainingFragment : Fragment(), SensorEventListener, Toolbar.OnMenuItemClickListener {
 
     private lateinit var ctx: Context
     private lateinit var game: Game
@@ -47,6 +50,7 @@ class TrainingFragment : Fragment(), SensorEventListener {
     private var lastShakeTime: Long = 0
 
     private var gameActive = false
+    private var mediaPlayer: MediaPlayer? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,11 +63,20 @@ class TrainingFragment : Fragment(), SensorEventListener {
         mSensorManager = ctx.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER).let {
             accelerometer = it
-            mSensorManager.registerListener(this, accelerometer,
-                SensorManager.SENSOR_DELAY_NORMAL)
+            mSensorManager.registerListener(
+                this, accelerometer,
+                SensorManager.SENSOR_DELAY_NORMAL
+            )
         }
         gameResultAdapter = GameResultAdapter(ctx)
         return inflater.inflate(R.layout.fragment_training, container, false)
+    }
+
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        if (item?.itemId == R.id.settings) {
+            Log.i("test", "poo")
+        }
+        return true
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -250,18 +263,27 @@ class TrainingFragment : Fragment(), SensorEventListener {
      * @param question: contains the ID for the two tones to play.
      */
     private fun playSounds(question: Question) {
-        var mediaPlayer: MediaPlayer = MediaPlayer.create(ctx, question.soundOne)
-        mediaPlayer.start()
-        mediaPlayer.setOnCompletionListener {
-            mediaPlayer.release()
+        releasePlayer()
+        mediaPlayer = MediaPlayer.create(ctx, question.soundOne)
+        mediaPlayer?.start()
+        mediaPlayer?.setOnCompletionListener {
+            releasePlayer()
             mediaPlayer = MediaPlayer.create(ctx, question.soundTwo)
-            mediaPlayer.start()
-            mediaPlayer.setOnCompletionListener {
-                mediaPlayer.release()
+            mediaPlayer?.start()
+            mediaPlayer?.setOnCompletionListener {
+                releasePlayer()
             }
         }
     }
 
+    /**
+     * Stop and release the active media player.
+     */
+    private fun releasePlayer() {
+        mediaPlayer?.stop()
+        mediaPlayer?.release()
+        mediaPlayer = null
+    }
 
     companion object {
         /**
@@ -299,7 +321,6 @@ class TrainingFragment : Fragment(), SensorEventListener {
                     val accel = sqrt((x * x) + (y * y) + (z * z)) - SensorManager.GRAVITY_EARTH
                     if (accel > SHAKE_THRESHOLD && gameActive) {
                         lastShakeTime = currentShakeTime
-                        Log.i("test", "zoo")
                         shakeCount += 1
                         if (shakeCount >= NUM_SHAKES) {
                             playSounds(game.getCurrentQuestion())

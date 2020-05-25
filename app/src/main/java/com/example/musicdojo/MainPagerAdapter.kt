@@ -1,5 +1,7 @@
 package com.example.musicdojo
 
+import android.os.Parcelable
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
@@ -31,5 +33,9 @@ class MainPagerAdapter(fm: FragmentManager) :
 
     override fun getCount(): Int {
         return screens.size
+    }
+
+    override fun saveState(): Parcelable? {
+        return super.saveState()
     }
 }

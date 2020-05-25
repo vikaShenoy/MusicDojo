@@ -12,29 +12,26 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import com.example.musicdojo.database.GameResultAdapter
 import com.example.musicdojo.model.Game
-import com.example.musicdojo.model.Mode
 import com.example.musicdojo.model.Question
 import com.example.musicdojo.model.GameResult
-import kotlinx.android.synthetic.main.activity_main.*
+import com.example.musicdojo.util.INTERVALS
+import com.example.musicdojo.util.MODES
+import com.example.musicdojo.util.MODE_DEFAULT
+import com.example.musicdojo.util.NUM_QUESTIONS_DEFAULT
 import kotlinx.android.synthetic.main.fragment_training.*
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.logging.SimpleFormatter
 import kotlin.math.sqrt
 
 class TrainingFragment : Fragment(), SensorEventListener {
@@ -92,8 +89,12 @@ class TrainingFragment : Fragment(), SensorEventListener {
 
         startBtn.setOnClickListener {
             vibrate(500)
-            val modeName = prefs.getString("selected_mode", MODE_DEFAULT)
-            val n: Int? = prefs.getString("num_questions", NUM_QUESTIONS_DEFAULT)?.toInt()
+            val modeName = prefs.getString("selected_mode",
+                MODE_DEFAULT
+            )
+            val n: Int? = prefs.getString("num_questions",
+                NUM_QUESTIONS_DEFAULT
+            )?.toInt()
             val mode = MODES[modeName]
             if (mode != null && modeName != null && n != null) {
                 startGame(Game(modeName, ctx, mode, n))
@@ -120,6 +121,12 @@ class TrainingFragment : Fragment(), SensorEventListener {
         replayBtn.visibility = View.INVISIBLE
         selectAnswerBtn.visibility = View.INVISIBLE
         intervalSpinner.visibility = View.INVISIBLE
+
+
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        //super.onSaveInstanceState(outState)
     }
 
     /**

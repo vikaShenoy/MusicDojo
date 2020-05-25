@@ -1,4 +1,4 @@
-package com.example.musicdojo
+package com.example.musicdojo.util
 
 import com.example.musicdojo.model.Mode
 
@@ -23,5 +23,5 @@ val MODES = mapOf<String, Mode>(
     "Chords" to Mode.CHORD
 )
 
-val MODE_DEFAULT = "Intervals"
-val NUM_QUESTIONS_DEFAULT = "5"
+const val MODE_DEFAULT = "Intervals"
+const val NUM_QUESTIONS_DEFAULT = "5"

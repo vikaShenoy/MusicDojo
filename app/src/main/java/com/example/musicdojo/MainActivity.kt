@@ -1,8 +1,12 @@
 package com.example.musicdojo
 
+import android.app.*
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.PersistableBundle
+import android.os.SystemClock
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -12,14 +16,15 @@ import androidx.viewpager.widget.ViewPager
 import com.example.musicdojo.MainPagerAdapter
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_settings.*
 
 /**
  * Main activity. Intialise bottom navigation.
  */
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
-    private lateinit var viewPager : ViewPager
-    private lateinit var bottomNavigationView : BottomNavigationView
-    private lateinit var mainPagerAdapter : MainPagerAdapter
+    private lateinit var viewPager: ViewPager
+    private lateinit var bottomNavigationView: BottomNavigationView
+    private lateinit var mainPagerAdapter: MainPagerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,8 +36,12 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             supportFragmentManager
         )
 
-        mainPagerAdapter.setItems(arrayListOf(MainScreen.TRAINING,
-            MainScreen.METRONOME, MainScreen.TIMER))
+        mainPagerAdapter.setItems(
+            arrayListOf(
+                MainScreen.TRAINING,
+                MainScreen.METRONOME, MainScreen.TIMER
+            )
+        )
 
         val defaultScreen = MainScreen.TRAINING
         scrollToScreen(defaultScreen)
@@ -54,6 +63,26 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 supportActionBar?.setTitle(selectedScreen.titleStringId)
             }
         })
+
+        createNotificationChannel()
+        sendNotification()
+    }
+
+    private fun sendNotification() {
+        val intent = Intent(applicationContext, AlarmReceiver::class.java).let {
+            PendingIntent.getBroadcast(applicationContext, 0, it, 0)
+        }
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setInexactRepeating(AlarmManager.RTC, SystemClock.elapsedRealtime() + 100, AlarmManager.INTERVAL_DAY, intent)
+    }
+
+    private fun createNotificationChannel() {
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel =
+            NotificationChannel(Notification.CATEGORY_REMINDER, "Daily reminders", importance)
+        val notificationManager: NotificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 
     /**
@@ -68,7 +97,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     /**
      * Uses the ViewPager to scroll to the selected screen.
      */
-    private fun scrollToScreen(mainScreen : MainScreen) {
+    private fun scrollToScreen(mainScreen: MainScreen) {
         val screenPosition = mainPagerAdapter.getItems().indexOf(mainScreen)
         if (screenPosition != viewPager.currentItem) {
             viewPager.currentItem = screenPosition
@@ -78,7 +107,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     /**
      * Listener for registering bottom nav clicks.
      */
-    override fun onNavigationItemSelected(menuItem : MenuItem): Boolean {
+    override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
         getMainScreenForMenuItem(menuItem.itemId)?.let {
             scrollToScreen(it)
             supportActionBar?.setTitle(it.titleStringId)
@@ -92,7 +121,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) = when(item.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.settings -> {
             startActivity(Intent(this, SettingsActivity::class.java))
             true
@@ -102,7 +131,11 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         }
     }
 
-
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        val defaultScreen = MainScreen.TRAINING
+        scrollToScreen(defaultScreen)
+    }
 
 }
 

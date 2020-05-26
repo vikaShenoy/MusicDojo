@@ -36,4 +36,11 @@
     <string name="min7">Minor 7th</string>
     <string name="maj7">Major 7th</string>
     <string name="oct">Octave</string>
+
+    <string name="smallInc">+2</string>
+    <string name="bigInc">+5</string>
+    <string name="smallNegInc">-2</string>
+    <string name="bigNegInc">-5</string>
+
+    <string name="play">Play</string>
 </resources>

@@ -25,3 +25,7 @@ val MODES = mapOf<String, Mode>(
 
 const val MODE_DEFAULT = "Intervals"
 const val NUM_QUESTIONS_DEFAULT = "5"
+
+const val MIN_BPM = 50
+const val MAX_BPM = 250
+const val INITIAL_BPM = 100

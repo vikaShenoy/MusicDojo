@@ -4,11 +4,17 @@ import android.content.Context
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
 import androidx.fragment.app.Fragment
+import com.example.musicdojo.util.INITIAL_BPM
+import com.example.musicdojo.util.MAX_BPM
+import com.example.musicdojo.util.MIN_BPM
 import kotlinx.android.synthetic.main.fragment_metronome.*
+import kotlinx.android.synthetic.main.fragment_metronome.view.*
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -17,8 +23,11 @@ import kotlin.concurrent.schedule
 
 class MetronomeFragment : Fragment() {
 
-    private var player: MediaPlayer? = null
     private lateinit var ctx: Context
+    private var player: MediaPlayer? = null
+    private var timer = Timer()
+    private var bpm: Int = INITIAL_BPM
+    private var isActive = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,32 +43,67 @@ class MetronomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         player = MediaPlayer.create(ctx, R.raw.metronome)
-
+        bpmTxt.text = bpm.toString()
+        initSeekBar()
         startStopBtn.setOnClickListener {
-            // TODO - get the seek bar value here
-            val bpm = 165
-            startMetronome(bpm)
+            if (isActive) {
+                stopMetronome()
+                startStopBtn.text = resources.getString(R.string.start)
+            } else {
+                startMetronome()
+                startStopBtn.text = resources.getString(R.string.stop)
+            }
+            isActive = !isActive
         }
+    }
+
+    /**
+     * Initialise the metronome controller bar by providing the min/max const values.
+     * Add a listener to the bar to change the tempo of the metronome to the
+     * seek bar value if the metronome is active.
+     */
+    private fun initSeekBar() {
+        metronomeBar.min = MIN_BPM
+        metronomeBar.max = MAX_BPM
+        metronomeBar.progress = bpm
+        metronomeBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(p0: SeekBar?, progress: Int, p2: Boolean) {
+                bpm = progress
+                bpmTxt.text = bpm.toString()
+                if (isActive) {
+                    stopMetronome()
+                    startMetronome()
+                }
+            }
+
+            override fun onStartTrackingTouch(p0: SeekBar?) {
+                stopMetronome()
+            }
+
+            override fun onStopTrackingTouch(p0: SeekBar?) {}
+
+        })
     }
 
     /**
      * Start the media player which is playing metronome clicks
      * at the tempo specified by the user.
-     * @param bpm: Metronome tempo in BPM
      */
-    private fun startMetronome(bpm: Int) {
-        Timer().schedule(0, (60000 / bpm).toLong()) {
+    private fun startMetronome() {
+        timer = Timer()
+        player = MediaPlayer.create(ctx, R.raw.metronome)
+        timer.schedule(0, (60000 / bpm).toLong()) {
             player?.seekTo(0)
             player?.start()
         }
-
     }
 
     /**
-     * Stop the mp which is playing the metronome sound.
+     * Stop the media player which is playing the metronome sound.
      */
     private fun stopMetronome() {
-        player?.stop()
+        timer.cancel()
+        releasePlayer()
     }
 
     /**

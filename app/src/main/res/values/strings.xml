@@ -42,5 +42,5 @@
     <string name="smallNegInc">-2</string>
     <string name="bigNegInc">-5</string>
 
-    <string name="play">Play</string>
+    <string name="play">Start / Stop</string>
 </resources>

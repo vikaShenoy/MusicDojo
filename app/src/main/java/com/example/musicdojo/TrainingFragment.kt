@@ -49,7 +49,7 @@ class TrainingFragment : Fragment(), SensorEventListener {
     private var lastShakeTime: Long = 0
 
     private var gameActive = false
-    private var mediaPlayer: MediaPlayer? = null
+    private var player: MediaPlayer? = null
 
     private lateinit var prefs : SharedPreferences
 
@@ -281,13 +281,13 @@ class TrainingFragment : Fragment(), SensorEventListener {
      */
     private fun playSounds(question: Question) {
         releasePlayer()
-        mediaPlayer = MediaPlayer.create(ctx, question.soundOne)
-        mediaPlayer?.start()
-        mediaPlayer?.setOnCompletionListener {
+        player = MediaPlayer.create(ctx, question.soundOne)
+        player?.start()
+        player?.setOnCompletionListener {
             releasePlayer()
-            mediaPlayer = MediaPlayer.create(ctx, question.soundTwo)
-            mediaPlayer?.start()
-            mediaPlayer?.setOnCompletionListener {
+            player = MediaPlayer.create(ctx, question.soundTwo)
+            player?.start()
+            player?.setOnCompletionListener {
                 releasePlayer()
             }
         }
@@ -297,9 +297,9 @@ class TrainingFragment : Fragment(), SensorEventListener {
      * Stop and release the active media player.
      */
     private fun releasePlayer() {
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
-        mediaPlayer = null
+        player?.stop()
+        player?.release()
+        player = null
     }
 
     companion object {

@@ -10,7 +10,6 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -32,7 +31,6 @@ import com.example.musicdojo.util.MODES
 import com.example.musicdojo.util.MODE_DEFAULT
 import com.example.musicdojo.util.NUM_QUESTIONS_DEFAULT
 import kotlinx.android.synthetic.main.fragment_training.*
-import kotlinx.android.synthetic.main.save_score.*
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.sqrt
@@ -242,7 +240,6 @@ class TrainingFragment : Fragment(), SensorEventListener {
         val scoreTxt = scoreView.findViewById<TextView>(R.id.saveScoreTxt)
         val saveBtn = scoreView.findViewById<Button>(R.id.saveScoreBtn)
         val sendBtn = scoreView.findViewById<Button>(R.id.sendBtn)
-        val cancelBtn = scoreView.findViewById<Button>(R.id.cancelBtn)
 
         gameNameTxt.text = game.name
         scoreTxt.text = resources.getString(R.string.score, game.score, game.numQuestions)
@@ -265,11 +262,7 @@ class TrainingFragment : Fragment(), SensorEventListener {
 
         val dialogBuilder: android.app.AlertDialog.Builder = android.app.AlertDialog.Builder(ctx)
         dialogBuilder.setView(scoreView)
-        val dialog = dialogBuilder.create()
-        cancelBtn.setOnClickListener {
-            dialog.dismiss()
-        }
-        return dialog
+        return dialogBuilder.create()
     }
 
     /**
@@ -353,9 +346,9 @@ class TrainingFragment : Fragment(), SensorEventListener {
                 val currentShakeTime = System.currentTimeMillis()
 
                 if (currentShakeTime - lastShakeTime > SHAKE_TIMEOUT) {
-                    val diffTime = currentShakeTime - lastShakeTime
-                    val accel = sqrt((x * x) + (y * y) + (z * z)) - SensorManager.GRAVITY_EARTH
-                    if (accel > SHAKE_THRESHOLD && gameActive) {
+                    val acl = sqrt(
+                        (x * x) + (y * y) + (z * z)) - SensorManager.GRAVITY_EARTH
+                    if (acl > SHAKE_THRESHOLD && gameActive) {
                         lastShakeTime = currentShakeTime
                         shakeCount += 1
                         if (shakeCount >= NUM_SHAKES) {

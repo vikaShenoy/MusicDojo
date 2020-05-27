@@ -1,9 +1,14 @@
 package com.example.musicdojo
 
 import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,13 +22,20 @@ import com.example.musicdojo.util.TEMPO_BUTTONS
 import kotlinx.android.synthetic.main.fragment_metronome.*
 import java.util.*
 import kotlin.concurrent.schedule
+import kotlin.math.sqrt
 
-class MetronomeFragment : Fragment() {
+class MetronomeFragment : Fragment(), SensorEventListener {
 
     private lateinit var ctx: Context
     private var timer = Timer()
     private var bpm: Int = INITIAL_BPM
     private var isActive = false
+
+    private var lastTime: Long = 0
+    private val TIMEOUT = 1000
+
+    private lateinit var sensorManager: SensorManager
+    private lateinit var accelerometer: Sensor
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,6 +44,11 @@ class MetronomeFragment : Fragment() {
     ): View? {
         if (container != null) {
             ctx = container.context
+        }
+        sensorManager = ctx.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER).let {
+            accelerometer = it
+            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
         }
         return inflater.inflate(R.layout.fragment_metronome, container, false)
     }
@@ -146,5 +163,35 @@ class MetronomeFragment : Fragment() {
                 arguments = Bundle().apply {
                 }
             }
+    }
+
+    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
+    }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        when (event?.sensor?.type) {
+            Sensor.TYPE_ACCELEROMETER -> {
+
+                val currentTime = System.currentTimeMillis()
+                if (currentTime - lastTime > TIMEOUT) {
+                    lastTime = currentTime
+                    val x = event.values[0]
+                    val y = event.values[1]
+                    val z = event.values[2]
+
+                    Log.i("test", "x: ${x.toString()}")
+                    Log.i("test", "y: ${y.toString()}")
+                    Log.i("test", "z: ${z.toString()}")
+
+                    if (z > 15) {
+                        updateBpm(bpm + TEMPO_BUTTONS.last())
+                    } else if (z < 0) {
+                        updateBpm(bpm + TEMPO_BUTTONS[0])
+                    }
+
+                }
+            }
+        }
+
     }
 }

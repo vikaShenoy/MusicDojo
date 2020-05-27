@@ -44,4 +44,10 @@
     <string name="bigNegInc">-5</string>
 
     <string name="play">Start / Stop</string>
+
+    <string name="send">Send</string>
+    <string name="btnInc">+%1$d</string>
+
+    <string name="email_subject">Ear Training Result</string>
+    <string name="email_body">I scored %1$d / %2$d on ear training mode: %3$s</string>
 </resources>

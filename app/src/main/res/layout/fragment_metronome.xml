@@ -7,15 +7,14 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/bigIncBtn"
+        android:id="@+id/btn3"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
-        android:text="@string/bigInc"
-        app:layout_constraintEnd_toStartOf="@+id/smallIncBtn"
-        app:layout_constraintStart_toEndOf="@+id/bigDecBtn"
+        app:layout_constraintEnd_toStartOf="@+id/btn4"
+        app:layout_constraintStart_toEndOf="@+id/btn2"
         app:layout_constraintTop_toBottomOf="@+id/bpmTxt" />
 
     <SeekBar
@@ -37,48 +36,46 @@
         android:id="@+id/bpmTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:fontFamily="sans-serif-condensed-medium"
         android:textAppearance="@style/TextAppearance.AppCompat.Display3"
+        android:textColor="@color/colorAccent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/metronomeBar" />
 
     <Button
-        android:id="@+id/smallDecBtn"
+        android:id="@+id/btn1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="64dp"
         android:layout_marginEnd="8dp"
-        android:text="@string/smallNegInc"
-        app:layout_constraintEnd_toStartOf="@+id/bigDecBtn"
+        app:layout_constraintEnd_toStartOf="@+id/btn2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bpmTxt" />
 
     <Button
-        android:id="@+id/bigDecBtn"
+        android:id="@+id/btn2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
-        android:text="@string/bigNegInc"
-        app:layout_constraintEnd_toStartOf="@+id/bigIncBtn"
-        app:layout_constraintStart_toEndOf="@+id/smallDecBtn"
+        app:layout_constraintEnd_toStartOf="@+id/btn3"
+        app:layout_constraintStart_toEndOf="@+id/btn1"
         app:layout_constraintTop_toBottomOf="@+id/bpmTxt" />
 
     <Button
-        android:id="@+id/smallIncBtn"
+        android:id="@+id/btn4"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="64dp"
         android:layout_marginEnd="16dp"
-        android:text="@string/smallInc"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/bigIncBtn"
+        app:layout_constraintStart_toEndOf="@+id/btn3"
         app:layout_constraintTop_toBottomOf="@+id/bpmTxt" />
 
     <Button

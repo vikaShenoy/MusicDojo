@@ -1,30 +1,26 @@
 package com.example.musicdojo
 
 import android.content.Context
-import android.media.MediaPlayer
+import android.media.AudioManager
+import android.media.ToneGenerator
 import android.os.Bundle
-import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import com.example.musicdojo.util.INITIAL_BPM
 import com.example.musicdojo.util.MAX_BPM
 import com.example.musicdojo.util.MIN_BPM
+import com.example.musicdojo.util.TEMPO_BUTTONS
 import kotlinx.android.synthetic.main.fragment_metronome.*
-import kotlinx.android.synthetic.main.fragment_metronome.view.*
 import java.util.*
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.TimeUnit
 import kotlin.concurrent.schedule
 
 class MetronomeFragment : Fragment() {
 
     private lateinit var ctx: Context
-    private var player: MediaPlayer? = null
     private var timer = Timer()
     private var bpm: Int = INITIAL_BPM
     private var isActive = false
@@ -42,18 +38,38 @@ class MetronomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        player = MediaPlayer.create(ctx, R.raw.metronome)
         bpmTxt.text = bpm.toString()
         initSeekBar()
+        initTempoButtons()
         startStopBtn.setOnClickListener {
-            if (isActive) {
-                stopMetronome()
-                startStopBtn.text = resources.getString(R.string.start)
-            } else {
-                startMetronome()
-                startStopBtn.text = resources.getString(R.string.stop)
-            }
-            isActive = !isActive
+            toggleMetronome()
+        }
+    }
+
+    private fun initTempoButtons() {
+        initTempoButton(btn1, TEMPO_BUTTONS[0])
+        initTempoButton(btn2, TEMPO_BUTTONS[1])
+        initTempoButton(btn3, TEMPO_BUTTONS[2])
+        initTempoButton(btn4, TEMPO_BUTTONS[3])
+    }
+
+    private fun initTempoButton(btn: Button, value: Int) {
+        if (value.toString()[0] == '-') {
+            btn.text = value.toString()
+        } else {
+            btn.text = resources.getString(R.string.btnInc, value)
+        }
+        btn.setOnClickListener {
+            updateBpm(bpm + value)
+        }
+    }
+
+    private fun updateBpm(tempo: Int) {
+        bpm = tempo
+        bpmTxt.text = bpm.toString()
+        if (isActive) {
+            stopMetronome()
+            startMetronome()
         }
     }
 
@@ -67,13 +83,8 @@ class MetronomeFragment : Fragment() {
         metronomeBar.max = MAX_BPM
         metronomeBar.progress = bpm
         metronomeBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(p0: SeekBar?, progress: Int, p2: Boolean) {
-                bpm = progress
-                bpmTxt.text = bpm.toString()
-                if (isActive) {
-                    stopMetronome()
-                    startMetronome()
-                }
+            override fun onProgressChanged(p0: SeekBar?, seekVal: Int, p2: Boolean) {
+                updateBpm(seekVal)
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {
@@ -91,10 +102,10 @@ class MetronomeFragment : Fragment() {
      */
     private fun startMetronome() {
         timer = Timer()
-        player = MediaPlayer.create(ctx, R.raw.metronome)
         timer.schedule(0, (60000 / bpm).toLong()) {
-            player?.seekTo(0)
-            player?.start()
+            val tone = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
+            tone.startTone(ToneGenerator.TONE_PROP_BEEP)
+            tone.release()
         }
     }
 
@@ -103,16 +114,20 @@ class MetronomeFragment : Fragment() {
      */
     private fun stopMetronome() {
         timer.cancel()
-        releasePlayer()
     }
 
     /**
-     * Stop and release the active media player.
+     * Toggle the metronome between start and stop states.
      */
-    private fun releasePlayer() {
-        player?.stop()
-        player?.release()
-        player = null
+    private fun toggleMetronome() {
+        if (isActive) {
+            stopMetronome()
+            startStopBtn.text = resources.getString(R.string.start)
+        } else {
+            startMetronome()
+            startStopBtn.text = resources.getString(R.string.stop)
+        }
+        isActive = !isActive
     }
 
     companion object {

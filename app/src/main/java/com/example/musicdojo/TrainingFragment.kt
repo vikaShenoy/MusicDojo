@@ -3,12 +3,14 @@ package com.example.musicdojo
 import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -30,6 +32,7 @@ import com.example.musicdojo.util.MODES
 import com.example.musicdojo.util.MODE_DEFAULT
 import com.example.musicdojo.util.NUM_QUESTIONS_DEFAULT
 import kotlinx.android.synthetic.main.fragment_training.*
+import kotlinx.android.synthetic.main.save_score.*
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.sqrt
@@ -51,7 +54,7 @@ class TrainingFragment : Fragment(), SensorEventListener {
     private var gameActive = false
     private var player: MediaPlayer? = null
 
-    private lateinit var prefs : SharedPreferences
+    private lateinit var prefs: SharedPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -89,10 +92,12 @@ class TrainingFragment : Fragment(), SensorEventListener {
 
         startBtn.setOnClickListener {
             vibrate(500)
-            val modeName = prefs.getString("selected_mode",
+            val modeName = prefs.getString(
+                "selected_mode",
                 MODE_DEFAULT
             )
-            val n: Int? = prefs.getString("num_questions",
+            val n: Int? = prefs.getString(
+                "num_questions",
                 NUM_QUESTIONS_DEFAULT
             )?.toInt()
             val mode = MODES[modeName]
@@ -236,12 +241,26 @@ class TrainingFragment : Fragment(), SensorEventListener {
         val gameNameTxt = scoreView.findViewById<TextView>(R.id.saveGameNameTxt)
         val scoreTxt = scoreView.findViewById<TextView>(R.id.saveScoreTxt)
         val saveBtn = scoreView.findViewById<Button>(R.id.saveScoreBtn)
+        val sendBtn = scoreView.findViewById<Button>(R.id.sendBtn)
         val cancelBtn = scoreView.findViewById<Button>(R.id.cancelBtn)
 
         gameNameTxt.text = game.name
         scoreTxt.text = resources.getString(R.string.score, game.score, game.numQuestions)
         saveBtn.setOnClickListener {
             onSave()
+        }
+
+        sendBtn.setOnClickListener {
+            val emailIntent = Intent(Intent.ACTION_SEND)
+            emailIntent.putExtra(
+                Intent.EXTRA_SUBJECT,
+                resources.getString(R.string.email_subject)
+            )
+            emailIntent.putExtra(
+                Intent.EXTRA_TEXT,
+                resources.getString(R.string.email_body, game.score, game.numQuestions, game.name)
+            )
+            startActivity(Intent.createChooser(emailIntent, "Send Email"))
         }
 
         val dialogBuilder: android.app.AlertDialog.Builder = android.app.AlertDialog.Builder(ctx)

@@ -84,6 +84,7 @@ class MetronomeFragment : Fragment(), SensorEventListener {
     private fun updateBpm(tempo: Int) {
         bpm = tempo
         bpmTxt.text = bpm.toString()
+        metronomeBar.setProgress(tempo)
         if (isActive) {
             stopMetronome()
             startMetronome()
@@ -172,20 +173,18 @@ class MetronomeFragment : Fragment(), SensorEventListener {
         when (event?.sensor?.type) {
             Sensor.TYPE_ACCELEROMETER -> {
 
+                const val moveThreshold = 5
                 val currentTime = System.currentTimeMillis()
                 if (currentTime - lastTime > TIMEOUT) {
-                    lastTime = currentTime
                     val x = event.values[0]
                     val y = event.values[1]
                     val z = event.values[2]
 
-                    Log.i("test", "x: ${x.toString()}")
-                    Log.i("test", "y: ${y.toString()}")
-                    Log.i("test", "z: ${z.toString()}")
-
-                    if (z > 15) {
+                    if (y >= moveThreshold) {
+                        lastTime = currentTime
                         updateBpm(bpm + TEMPO_BUTTONS.last())
-                    } else if (z < 0) {
+                    } else if (x >= moveThreshold) {
+                        lastTime = currentTime
                         updateBpm(bpm + TEMPO_BUTTONS[0])
                     }
 

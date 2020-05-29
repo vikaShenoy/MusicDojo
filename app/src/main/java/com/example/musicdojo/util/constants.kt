@@ -30,4 +30,4 @@ const val MIN_BPM = 50
 const val MAX_BPM = 250
 const val INITIAL_BPM = 100
 
-val TEMPO_BUTTONS: List<Int> = arrayListOf(-2, -5, 5, -5)
+val TEMPO_BUTTONS: List<Int> = arrayListOf(-5, 2, 2, 5)

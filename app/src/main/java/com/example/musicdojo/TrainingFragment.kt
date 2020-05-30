@@ -5,6 +5,7 @@ import android.animation.AnimatorSet
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -13,6 +14,7 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,6 +50,9 @@ class TrainingFragment : Fragment(), SensorEventListener {
     private val NUM_SHAKES = 3
     private var shakeCount = 0
     private var lastShakeTime: Long = 0
+
+    val green = "#a6fc5b"
+    val red = "#ff4747"
 
     private var gameActive = false
     private var player: MediaPlayer? = null
@@ -161,7 +166,12 @@ class TrainingFragment : Fragment(), SensorEventListener {
      */
     private fun answerSelected() {
         if (gameActive) {
-            game.submitAnswer(INTERVALS[intervalSpinner.selectedItem])
+            val answerCorrect = game.submitAnswer(INTERVALS[intervalSpinner.selectedItem])
+            if (answerCorrect) {
+                gameNameText.setTextColor(Color.parseColor(green))
+            } else {
+                gameNameText.setTextColor(Color.parseColor(red))
+            }
             intervalSpinner.setSelection(0)
 
             if (game.isFinished()) {

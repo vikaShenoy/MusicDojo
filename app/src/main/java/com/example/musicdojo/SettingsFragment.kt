@@ -11,7 +11,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.preferences, rootKey)
 
         findPreference<EditTextPreference>("num_questions")?.let {
-            it.setOnBindEditTextListener {editor ->
+            it.setOnBindEditTextListener { editor ->
                 editor.inputType = InputType.TYPE_CLASS_NUMBER
             }
         }

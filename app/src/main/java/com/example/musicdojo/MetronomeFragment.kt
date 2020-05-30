@@ -166,14 +166,13 @@ class MetronomeFragment : Fragment(), SensorEventListener {
             }
     }
 
-    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-    }
+    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {}
 
     override fun onSensorChanged(event: SensorEvent?) {
         when (event?.sensor?.type) {
             Sensor.TYPE_ACCELEROMETER -> {
 
-                const val moveThreshold = 5
+                val moveThreshold = 5
                 val currentTime = System.currentTimeMillis()
                 if (currentTime - lastTime > TIMEOUT) {
                     val x = event.values[0]

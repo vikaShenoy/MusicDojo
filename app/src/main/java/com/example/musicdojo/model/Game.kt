@@ -47,7 +47,7 @@ class Game(
             "p$intervalOne", "raw", ctx.packageName)
         val secondTone = ctx.resources.getIdentifier(
             "p$intervalTwo", "raw", ctx.packageName)
-        return Question(firstTone, secondTone, secondTone - firstTone)
+        return Question(firstTone, secondTone, intervalTwo - intervalOne)
     }
 
     /**
@@ -58,12 +58,14 @@ class Game(
         return range.first + nextInt(range.last - range.first)
     }
 
-    fun submitAnswer(answer: Int?) {
+    fun submitAnswer(answer: Int?) : Boolean {
         if (questions[currentQuestionIdx].answer == answer) {
-            Log.i("answer", "ye")
             score += 1
+            currentQuestionIdx += 1
+            return true
         }
         currentQuestionIdx += 1
+        return false
     }
 
     fun isFinished() : Boolean {

@@ -5,7 +5,6 @@ import android.animation.AnimatorSet
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.res.Configuration
 import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -15,7 +14,6 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,7 +29,6 @@ import com.example.musicdojo.model.Question
 import com.example.musicdojo.model.GameResult
 import com.example.musicdojo.util.INTERVALS
 import com.example.musicdojo.util.MODES
-import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_training.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -55,8 +52,6 @@ class TrainingFragment : Fragment(), SensorEventListener {
     private var shakeCount = 0
     private var lastShakeTime: Long = 0
 
-    private val green = "#a6fc5b"
-    private val red = "#ff4747"
     private val white = "#ededed"
 
     private var gameActive = false
@@ -98,7 +93,7 @@ class TrainingFragment : Fragment(), SensorEventListener {
             intervalSpinner.adapter = adapter
         }
 
-        startBtn.setOnClickListener {
+        recordBtn.setOnClickListener {
             vibrate(500)
             val modeName = prefs.getString(
                 "selected_mode",
@@ -157,9 +152,9 @@ class TrainingFragment : Fragment(), SensorEventListener {
         if (gameActive) {
             val answerCorrect = game.submitAnswer(INTERVALS[intervalSpinner.selectedItem])
             if (answerCorrect) {
-                gameNameText.setTextColor(Color.parseColor(green))
+                gameNameText.setTextColor(ctx.getColor(R.color.colorCorrectAnswer))
             } else {
-                gameNameText.setTextColor(Color.parseColor(red))
+                gameNameText.setTextColor(ctx.getColor(R.color.colorIncorrectAnswer))
             }
             intervalSpinner.setSelection(0)
 
@@ -202,7 +197,7 @@ class TrainingFragment : Fragment(), SensorEventListener {
      */
     private fun finishGame() {
         gameActive = false
-        gameNameText.setTextColor(Color.parseColor(white))
+        gameNameText.setTextColor(ctx.getColor(R.color.colorPrimary))
         setButtonVisibility()
 
         val scoreDialog = createScoreDialog(game) {
@@ -277,14 +272,14 @@ class TrainingFragment : Fragment(), SensorEventListener {
             replayBtn.visibility = View.VISIBLE
             selectAnswerBtn.visibility = View.VISIBLE
             intervalSpinner.visibility = View.VISIBLE
-            startBtn.visibility = View.INVISIBLE
+            recordBtn.visibility = View.INVISIBLE
         } else {
             questionText.visibility = View.INVISIBLE
             gameNameText.visibility = View.INVISIBLE
             replayBtn.visibility = View.INVISIBLE
             selectAnswerBtn.visibility = View.INVISIBLE
             intervalSpinner.visibility = View.INVISIBLE
-            startBtn.visibility = View.VISIBLE
+            recordBtn.visibility = View.VISIBLE
         }
     }
 

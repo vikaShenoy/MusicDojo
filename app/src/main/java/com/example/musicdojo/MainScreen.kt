@@ -27,6 +27,9 @@ enum class MainScreen(
     TIMER(
         R.id.bottom_navigation_timer, R.drawable.ic_timer,
         R.string.menu_timer, TimerFragment()
+    ),
+    LOOPER(
+        R.id.bottom_navigation_looper, R.drawable.ic_looper, R.string.looper, LooperFragment()
     )
 }
 

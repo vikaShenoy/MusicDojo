@@ -1,8 +1,10 @@
 package com.example.musicdojo
 
+import android.Manifest
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -13,6 +15,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.annotation.IdRes
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
 import com.example.musicdojo.MainPagerAdapter
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -40,7 +44,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         mainPagerAdapter.setItems(
             arrayListOf(
                 MainScreen.TRAINING,
-                MainScreen.METRONOME, MainScreen.TIMER
+                MainScreen.METRONOME, MainScreen.TIMER, MainScreen.LOOPER
             )
         )
 
@@ -64,6 +68,17 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 supportActionBar?.setTitle(selectedScreen.titleStringId)
             }
         })
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            val permissions = arrayOf(
+                android.Manifest.permission.RECORD_AUDIO,
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE
+            )
+            ActivityCompat.requestPermissions(this, permissions, 0)
+        }
 
         createNotificationChannel()
         sendNotification()

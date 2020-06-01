@@ -13,4 +13,8 @@
         android:id="@+id/bottom_navigation_timer"
         android:icon="@drawable/ic_timer"
         android:title="@string/menu_timer" />
+    <item
+        android:id="@+id/bottom_navigation_looper"
+        android:icon="@drawable/ic_looper"
+        android:title="@string/looper" />
 </menu>

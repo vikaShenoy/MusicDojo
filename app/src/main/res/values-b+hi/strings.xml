@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">संगीत दोजो</string>
+    <string name="menu_training">प्रशिक्षण</string>
+    <string name="menu_metronome">ताल-मापनी</string>
+    <string name="menu_timer">घड़ी</string>
+
+    <string name="training">प्रशिक्षण</string>
+    <string name="confirm">पुष्टि करें</string>
+
+    <string name="start">शुरू</string>
+    <string name="stop">रुकें</string>
+    <string name="play">खेल</string>
+    <string name="pause">ठहराव</string>
+    <string name="replay">फिर से आवाज़ करना</string>
+
+    <string name="looper">लूप</string>
+    <string name="record">अभिलेख</string>
+
+    <string name="save_score">स्कोर बचाओ</string>
+    <string name="score">%1$d / %2$d</string>
+    <string name="save">सहेजें</string>
+    <string name="cancel">रद्द करना</string>
+
+    <string name="question">सवाल: %1$d / %2$d</string>
+    <string name="settings">समायोजन</string>
+
+    <string name="interval">मध्यान्तर</string>
+    <string name="pitch">पिच</string>
+    <string name="chord">कॉर्ड्स</string>
+
+    <string name="min2">लघु २</string>
+    <string name="maj2">मेजर 2</string>
+    <string name="min3">लघु ३</string>
+    <string name="maj3">प्रमुख ३</string>
+    <string name="per4">एकदम सही ४</string>
+    <string name="dim5">५ वां घटा</string>
+    <string name="per5">परफेक्ट 5 वां</string>
+    <string name="min6">छोटी छठीं</string>
+    <string name="maj6">प्रमुख ६</string>
+    <string name="min7">छोटी 7 वीं</string>
+    <string name="maj7">प्रमुख 7 वें</string>
+    <string name="oct">सप्टक</string>
+
+    <string name="send">संदेश</string>
+    <string name="btnInc">+%1$d</string>
+
+    <string name="email_subject">कान प्रशिक्षण परिणाम</string>
+    <string name="email_body">mainne kaan prashikshan mod par %1$d/%2$d skor kiya</string>
+
+    <string name="enter_time">समय दर्ज करें (सेकंड में)</string>
+
+    <string name="countdown_min">%1$d:%2$d</string>
+    <string name="countdown_sec_under_ten">%1$d:0%2$d</string>
+    <string name="countdown_min_sec_zero">%1$d:00</string>
+    <string name="countdown_sec">%1$d</string>
+
+    <string name="start_recording">रिकॉर्डिंग शुरू हो गई!</string>
+    <string name="stop_recording">रिकॉर्डिंग समाप्त हो गई!</string>
+
+    <string name="time_format_error">समय को केवल संख्याओं में दर्ज करना होगा</string>
+    <string name="loop_record_error">रिकॉर्डिंग मोड में नहीं चल सकता</string>
+
+
+</resources>

@@ -5,6 +5,7 @@ import android.animation.AnimatorSet
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -30,12 +31,18 @@ import com.example.musicdojo.model.Question
 import com.example.musicdojo.model.GameResult
 import com.example.musicdojo.util.INTERVALS
 import com.example.musicdojo.util.MODES
-import com.example.musicdojo.util.MODE_DEFAULT
-import com.example.musicdojo.util.NUM_QUESTIONS_DEFAULT
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_training.*
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.sqrt
+
+private const val SHAKE_TIMEOUT = 500
+private const val SHAKE_THRESHOLD = 4.0f
+private const val NUM_SHAKES = 3
+
+private const val MODE_DEFAULT = "Intervals"
+private const val NUM_QUESTIONS_DEFAULT = "5"
 
 class TrainingFragment : Fragment(), SensorEventListener {
 
@@ -45,14 +52,12 @@ class TrainingFragment : Fragment(), SensorEventListener {
     private lateinit var accelerometer: Sensor
     private lateinit var gameResultAdapter: GameResultAdapter
 
-    private val SHAKE_TIMEOUT = 500
-    private val SHAKE_THRESHOLD = 4.0f
-    private val NUM_SHAKES = 3
     private var shakeCount = 0
     private var lastShakeTime: Long = 0
 
-    val green = "#a6fc5b"
-    val red = "#ff4747"
+    private val green = "#a6fc5b"
+    private val red = "#ff4747"
+    private val white = "#ededed"
 
     private var gameActive = false
     private var player: MediaPlayer? = null
@@ -126,25 +131,9 @@ class TrainingFragment : Fragment(), SensorEventListener {
             }
         }
 
-        replayBtn.visibility = View.INVISIBLE
-        selectAnswerBtn.visibility = View.INVISIBLE
-        intervalSpinner.visibility = View.INVISIBLE
-
+        setButtonVisibility()
 
     }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        //super.onSaveInstanceState(outState)
-    }
-
-    /**
-     * Release the media player if the user exits the activity.
-     */
-    override fun onStop() {
-        super.onStop()
-        releasePlayer()
-    }
-
 
     /**
      * Vibrate the device.
@@ -177,6 +166,7 @@ class TrainingFragment : Fragment(), SensorEventListener {
             if (game.isFinished()) {
                 finishGame()
             } else {
+//                Give the user the next question
                 questionText.text =
                     getString(
                         R.string.question,
@@ -196,7 +186,7 @@ class TrainingFragment : Fragment(), SensorEventListener {
     private fun startGame(newGame: Game) {
         game = newGame
         gameActive = true
-        flipButtons()
+        setButtonVisibility()
 
         gameNameText.text = game.name
         questionText.text =
@@ -212,7 +202,8 @@ class TrainingFragment : Fragment(), SensorEventListener {
      */
     private fun finishGame() {
         gameActive = false
-        flipButtons()
+        gameNameText.setTextColor(Color.parseColor(white))
+        setButtonVisibility()
 
         val scoreDialog = createScoreDialog(game) {
             val result: GameResult = GameResult(
@@ -279,7 +270,7 @@ class TrainingFragment : Fragment(), SensorEventListener {
      * Toggle the widgets which are visible based on whether the user is playing
      * a game currently or not.
      */
-    private fun flipButtons() {
+    private fun setButtonVisibility() {
         if (gameActive) {
             questionText.visibility = View.VISIBLE
             gameNameText.visibility = View.VISIBLE
@@ -313,6 +304,32 @@ class TrainingFragment : Fragment(), SensorEventListener {
                 releasePlayer()
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+    }
+
+    private fun setGameData() {
+        if (gameActive) {
+            questionText.text =
+                getString(
+                    R.string.question,
+                    game.currentQuestionIdx + 1,
+                    game.numQuestions
+                )
+            gameNameText.text = game.name
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        releasePlayer()
     }
 
     /**

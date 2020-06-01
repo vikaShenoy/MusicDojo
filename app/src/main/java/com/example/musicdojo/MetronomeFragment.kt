@@ -1,6 +1,7 @@
 package com.example.musicdojo
 
 import android.content.Context
+import android.content.res.Configuration
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -14,28 +15,28 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.SeekBar
+import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.example.musicdojo.util.INITIAL_BPM
-import com.example.musicdojo.util.MAX_BPM
-import com.example.musicdojo.util.MIN_BPM
-import com.example.musicdojo.util.TEMPO_BUTTONS
 import kotlinx.android.synthetic.main.fragment_metronome.*
 import java.util.*
 import kotlin.concurrent.schedule
 import kotlin.math.sqrt
 
-class MetronomeFragment : Fragment(), SensorEventListener {
+private const val MIN_BPM = 50
+private const val MAX_BPM = 250
+private const val INITIAL_BPM = 100
+private const val TIMEOUT = 1000
+
+private val TEMPO_BUTTONS: List<Int> = arrayListOf(-5, -2, 2, 5)
+
+class MetronomeFragment : Fragment() {
 
     private lateinit var ctx: Context
+    private lateinit var rootView: View
     private var timer = Timer()
     private var bpm: Int = INITIAL_BPM
     private var isActive = false
-
     private var lastTime: Long = 0
-    private val TIMEOUT = 1000
-
-    private lateinit var sensorManager: SensorManager
-    private lateinit var accelerometer: Sensor
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,19 +46,18 @@ class MetronomeFragment : Fragment(), SensorEventListener {
         if (container != null) {
             ctx = container.context
         }
-        sensorManager = ctx.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER).let {
-            accelerometer = it
-            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
-        }
-        return inflater.inflate(R.layout.fragment_metronome, container, false)
+
+        rootView = inflater.inflate(R.layout.fragment_metronome, container, false)
+        return rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bpmTxt.text = bpm.toString()
         initSeekBar()
-        initTempoButtons()
+        if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            initTempoButtons()
+        }
         startStopBtn.setOnClickListener {
             toggleMetronome()
         }
@@ -83,8 +83,13 @@ class MetronomeFragment : Fragment(), SensorEventListener {
 
     private fun updateBpm(tempo: Int) {
         bpm = tempo
-        bpmTxt.text = bpm.toString()
-        metronomeBar.setProgress(tempo)
+        if (bpmTxt != null) {
+            bpmTxt.text = tempo.toString()
+        }
+
+        if (metronomeBar != null) {
+            metronomeBar.progress = tempo
+        }
         if (isActive) {
             stopMetronome()
             startMetronome()
@@ -148,6 +153,11 @@ class MetronomeFragment : Fragment(), SensorEventListener {
         isActive = !isActive
     }
 
+    override fun onStop() {
+        super.onStop()
+        stopMetronome()
+    }
+
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -164,32 +174,5 @@ class MetronomeFragment : Fragment(), SensorEventListener {
                 arguments = Bundle().apply {
                 }
             }
-    }
-
-    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {}
-
-    override fun onSensorChanged(event: SensorEvent?) {
-        when (event?.sensor?.type) {
-            Sensor.TYPE_ACCELEROMETER -> {
-
-                val moveThreshold = 5
-                val currentTime = System.currentTimeMillis()
-                if (currentTime - lastTime > TIMEOUT) {
-                    val x = event.values[0]
-                    val y = event.values[1]
-                    val z = event.values[2]
-
-                    if (y >= moveThreshold) {
-                        lastTime = currentTime
-                        updateBpm(bpm + TEMPO_BUTTONS.last())
-                    } else if (x >= moveThreshold) {
-                        lastTime = currentTime
-                        updateBpm(bpm + TEMPO_BUTTONS[0])
-                    }
-
-                }
-            }
-        }
-
     }
 }

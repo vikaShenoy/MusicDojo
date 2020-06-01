@@ -1,8 +1,7 @@
 package com.example.musicdojo.model
 
 import android.content.Context
-import android.util.Log
-import com.example.musicdojo.R
+import java.io.Serializable
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -11,8 +10,8 @@ class Game(
     val ctx: Context,
     val mode: Mode = Mode.INTERVAL,
     val numQuestions: Int
-) {
-    val questions: List<Question> = generateQuestions()
+): Serializable {
+    val questions: MutableList<Question> = generateQuestions()
     var currentQuestionIdx: Int = 0
     var score: Int = 0
 
@@ -23,7 +22,7 @@ class Game(
      * @param numQuestions: how many questions to generate
      * @return list of questions.
      */
-    private fun generateQuestions(): List<Question> {
+    private fun generateQuestions(): MutableList<Question> {
         val questions: MutableList<Question> = ArrayList<Question>()
 
         for (i in 0..numQuestions) {

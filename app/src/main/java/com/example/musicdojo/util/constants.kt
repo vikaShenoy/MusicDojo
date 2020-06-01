@@ -22,12 +22,3 @@ val MODES = mapOf<String, Mode>(
     "Pitches" to Mode.PITCH,
     "Chords" to Mode.CHORD
 )
-
-const val MODE_DEFAULT = "Intervals"
-const val NUM_QUESTIONS_DEFAULT = "5"
-
-const val MIN_BPM = 50
-const val MAX_BPM = 250
-const val INITIAL_BPM = 100
-
-val TEMPO_BUTTONS: List<Int> = arrayListOf(-5, 2, 2, 5)

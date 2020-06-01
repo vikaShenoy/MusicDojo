@@ -91,6 +91,7 @@ class MetronomeFragment : Fragment() {
             metronomeBar.progress = tempo
         }
         if (isActive) {
+            startStopBtn.text = resources.getString(R.string.stop)
             stopMetronome()
             startMetronome()
         }
@@ -156,6 +157,21 @@ class MetronomeFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         stopMetronome()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean("isActive", isActive)
+        outState.putInt("bpm", bpm)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if (savedInstanceState != null) {
+            isActive = savedInstanceState.getBoolean("isActive")
+            bpm = savedInstanceState.getInt("bpm")
+        }
+        updateBpm(bpm)
     }
 
     companion object {

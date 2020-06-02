@@ -12,10 +12,8 @@ import androidx.core.content.getSystemService
 
 class AlarmReceiver : BroadcastReceiver() {
 
+    // Send the user a notification reminding them to do ear training
     override fun onReceive(ctx: Context?, intent: Intent?) {
-//        val contentIntent: PendingIntent = Intent(ctx, MainActivity::class.java).run {
-//            PendingIntent.getActivity(ctx, 0, this, 0)
-//        }
         val notification = Notification.Builder(ctx, Notification.CATEGORY_REMINDER).run {
             setSmallIcon(R.drawable.ic_notify)
             setContentTitle("Ear Training")

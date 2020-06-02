@@ -13,6 +13,11 @@ import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_looper.*
 import java.io.IOException
 
+private const val DEFAULT_FILENAME = "loopRecording.mp3"
+
+/**
+ * Fragment allowing the user to record and playback their recording in a loop.
+ */
 class LooperFragment : Fragment() {
 
     private lateinit var ctx: Context
@@ -32,7 +37,7 @@ class LooperFragment : Fragment() {
         if (container != null) {
             ctx = container.context
         }
-        fileName = "${ctx.externalCacheDir?.absolutePath}/loopRecording.mp3"
+        fileName = "${ctx.externalCacheDir?.absolutePath}/${DEFAULT_FILENAME}"
         return inflater.inflate(R.layout.fragment_looper, container, false)
     }
 
@@ -54,6 +59,10 @@ class LooperFragment : Fragment() {
         }
     }
 
+    /**
+     * Start recording audio for the user to input a loop.
+     * Change the recording button color and text to indicate the user is recording.
+     */
     private fun startRecording() {
         try {
             mediaRecorder = MediaRecorder().apply {
@@ -75,6 +84,9 @@ class LooperFragment : Fragment() {
         }
     }
 
+    /**
+     * Release the recorder and update the recording button to indicate recording has stopped.
+     */
     private fun stopRecording() {
         mediaRecorder?.stop()
         mediaRecorder?.release()
@@ -83,6 +95,9 @@ class LooperFragment : Fragment() {
         Toast.makeText(ctx, resources.getString(R.string.stop_recording), Toast.LENGTH_SHORT).show()
     }
 
+    /**
+     * Start playback of the last loop the user recorded.
+     */
     private fun startLooping() {
         if (isRecording) {
             Toast.makeText(ctx, resources.getString(R.string.loop_record_error), Toast.LENGTH_SHORT)
@@ -104,6 +119,9 @@ class LooperFragment : Fragment() {
         updateLoopBtn()
     }
 
+    /**
+     * Stop playback of the currently playing loop.
+     */
     private fun stopLooping() {
         mediaPlayer?.stop()
         mediaPlayer?.release()
@@ -112,6 +130,10 @@ class LooperFragment : Fragment() {
         updateLoopBtn()
     }
 
+    /**
+     * Update the state of the record button depending on whether the user is in
+     * recording state or not.
+     */
     private fun updateRecordBtn() {
         if (isRecording) {
             recordBtn.setBackgroundColor(ctx.getColor(R.color.colorRecord))
@@ -122,6 +144,10 @@ class LooperFragment : Fragment() {
         }
     }
 
+    /**
+     * Update the state of the playback loop button depending on whether the
+     * user is currently playing audio or not.
+     */
     private fun updateLoopBtn() {
         if (isPlaying) {
             loopBtn.setBackgroundColor(ctx.getColor(R.color.colorCorrectAnswer))
@@ -132,6 +158,9 @@ class LooperFragment : Fragment() {
         }
     }
 
+    /**
+     * Release the resources used by the media player and recorder.
+     */
     override fun onStop() {
         super.onStop()
         mediaRecorder?.release()

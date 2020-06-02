@@ -48,16 +48,12 @@ class TrainingFragment : Fragment(), SensorEventListener {
     private lateinit var mSensorManager: SensorManager
     private lateinit var accelerometer: Sensor
     private lateinit var gameResultAdapter: GameResultAdapter
+    private lateinit var prefs: SharedPreferences
 
     private var shakeCount = 0
     private var lastShakeTime: Long = 0
-
-    private val white = "#ededed"
-
     private var gameActive = false
     private var player: MediaPlayer? = null
-
-    private lateinit var prefs: SharedPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -301,27 +297,6 @@ class TrainingFragment : Fragment(), SensorEventListener {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-    }
-
-    private fun setGameData() {
-        if (gameActive) {
-            questionText.text =
-                getString(
-                    R.string.question,
-                    game.currentQuestionIdx + 1,
-                    game.numQuestions
-                )
-            gameNameText.text = game.name
-        }
-    }
-
     override fun onStop() {
         super.onStop()
         releasePlayer()
@@ -354,9 +329,7 @@ class TrainingFragment : Fragment(), SensorEventListener {
             }
     }
 
-    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-
-    }
+    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {}
 
     override fun onSensorChanged(event: SensorEvent?) {
         when (event?.sensor?.type) {

@@ -23,6 +23,9 @@ import kotlin.concurrent.schedule
 // In seconds
 private const val DEFAULT_TOTAL_TIME = 300
 
+/**
+ * Fragment which allows the user to set and use a countdown timer.
+ */
 class TimerFragment : Fragment() {
 
     private lateinit var ctx: Context
@@ -61,6 +64,9 @@ class TimerFragment : Fragment() {
         }
     }
 
+    /**
+     * Create and show a dialog for selecting how much time to count down from.
+     */
     private fun setTime() {
         val timeDialog = createTimeDialog(totalTime) {
             if (it.chars().allMatch(Character::isDigit)) {
@@ -78,6 +84,12 @@ class TimerFragment : Fragment() {
         timeDialog.show()
     }
 
+    /**
+     * Create a dialog popup for the user to select the countdown time.
+     * @param time: The current total countdown time. Used to display in the edit text for the user
+     * so they know what the time is currently set at.
+     * @param onSave: Callback to perform when the user clicks on the save button.
+     */
     private fun createTimeDialog(time: Int, onSave: (String) -> Unit): AlertDialog {
         val setTimeView = layoutInflater.inflate(R.layout.set_time, null)
         val saveTimeBtn: Button = setTimeView.findViewById(R.id.saveTimeBtn)
@@ -97,6 +109,10 @@ class TimerFragment : Fragment() {
         return dialog
     }
 
+    /**
+     * Start counting down from the total countdown time. Update the textview
+     * on a UI thread every second. Stop when 0 seconds is reached.
+     */
     private fun startCountdown() {
         countdownBtn.text = resources.getString(R.string.stop)
         isCountingDown = true
@@ -115,6 +131,9 @@ class TimerFragment : Fragment() {
         }
     }
 
+    /**
+     * Refresh state of button, stop countdown timer object.
+     */
     private fun stopCountdown() {
         isCountingDown = false
         timer?.cancel()
@@ -122,16 +141,26 @@ class TimerFragment : Fragment() {
         releaseTimer()
     }
 
+    /**
+     * Play a beep tone.
+     */
     private fun playBeep() {
         val tone = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
         tone.startTone(ToneGenerator.TONE_PROP_BEEP)
         tone.release()
     }
 
+    /**
+     * Update the state of the text view showing remaining time. Used as countdown is happening.
+     */
     private fun updateCountdownText() {
         countdowntTxt.text = formatTime()
     }
 
+    /**
+     * Convert the time from an integer value of seconds to a format
+     * using string templates, ex. 5:11, 5:04.
+     */
     private fun formatTime(): String {
         val minutes = countdownTime / 60
         val seconds = countdownTime % 60
@@ -146,11 +175,17 @@ class TimerFragment : Fragment() {
         }
     }
 
+    /**
+     * Stop counting down with the timer object.
+     */
     private fun releaseTimer() {
         timer?.cancel()
         timer = null
     }
 
+    /**
+     * Release the timer resources on the stop activity lifecycle method.
+     */
     override fun onStop() {
         super.onStop()
         releaseTimer()

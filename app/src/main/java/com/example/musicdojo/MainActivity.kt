@@ -69,6 +69,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             }
         })
 
+        // Prompt the user with permissions for audio recording
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -84,14 +85,9 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         sendNotification()
     }
 
-    private fun sendNotification() {
-        val intent = Intent(applicationContext, AlarmReceiver::class.java).let {
-            PendingIntent.getBroadcast(applicationContext, 0, it, 0)
-        }
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.setInexactRepeating(AlarmManager.RTC, SystemClock.elapsedRealtime() + 100, AlarmManager.INTERVAL_DAY, intent)
-    }
-
+    /**
+     * Create a channel with which notifications can be sent on.
+     */
     private fun createNotificationChannel() {
         val importance = NotificationManager.IMPORTANCE_DEFAULT
         val channel =
@@ -99,6 +95,17 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         val notificationManager: NotificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
+    }
+
+    /**
+     * Send the user a notification. Triggered to repeat daily.
+     */
+    private fun sendNotification() {
+        val intent = Intent(applicationContext, AlarmReceiver::class.java).let {
+            PendingIntent.getBroadcast(applicationContext, 0, it, 0)
+        }
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setInexactRepeating(AlarmManager.RTC, SystemClock.elapsedRealtime() + 100, AlarmManager.INTERVAL_DAY, intent)
     }
 
     /**
@@ -132,11 +139,17 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         return false
     }
 
+    /**
+     * Set the items in the app toolbar.
+     */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.toolbar_items, menu)
         return true
     }
 
+    /**
+     * Open the correct activity when buttons are selected in the toolbar.
+     */
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.settings -> {
             startActivity(Intent(this, SettingsActivity::class.java))
@@ -152,6 +165,5 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         val defaultScreen = MainScreen.TRAINING
         scrollToScreen(defaultScreen)
     }
-
 }
 

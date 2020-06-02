@@ -33,10 +33,9 @@ class MetronomeFragment : Fragment() {
 
     private lateinit var ctx: Context
     private lateinit var rootView: View
-    private var timer = Timer()
+    private var timer: Timer? = null
     private var bpm: Int = INITIAL_BPM
     private var isActive = false
-    private var lastTime: Long = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,6 +62,10 @@ class MetronomeFragment : Fragment() {
         }
     }
 
+    /**
+     * Add the correct label and listener to each of the four tempo buttons.
+     * Values for the buttons are specified in a const array.
+     */
     private fun initTempoButtons() {
         initTempoButton(btn1, TEMPO_BUTTONS[0])
         initTempoButton(btn2, TEMPO_BUTTONS[1])
@@ -70,6 +73,12 @@ class MetronomeFragment : Fragment() {
         initTempoButton(btn4, TEMPO_BUTTONS[3])
     }
 
+    /**
+     * Add a label to each button representing how it increases/decreases bpm.
+     * Add a listener to change bpm based on these values.
+     * @param button: Button to init.
+     * @param value: How much to add or remove to the bpm of the metronome on click.
+     */
     private fun initTempoButton(btn: Button, value: Int) {
         if (value.toString()[0] == '-') {
             btn.text = value.toString()
@@ -81,6 +90,11 @@ class MetronomeFragment : Fragment() {
         }
     }
 
+    /**
+     * Change the speed of the metronome. Restart the metronome at this bpm if
+     * it is currently playing.
+     * @param tempo: The new tempo to play the metronome at.
+     */
     private fun updateBpm(tempo: Int) {
         bpm = tempo
         if (bpmTxt != null) {
@@ -126,7 +140,7 @@ class MetronomeFragment : Fragment() {
      */
     private fun startMetronome() {
         timer = Timer()
-        timer.schedule(0, (60000 / bpm).toLong()) {
+        timer?.schedule(0, (60000 / bpm).toLong()) {
             val tone = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
             tone.startTone(ToneGenerator.TONE_PROP_BEEP)
             tone.release()
@@ -137,7 +151,7 @@ class MetronomeFragment : Fragment() {
      * Stop the media player which is playing the metronome sound.
      */
     private fun stopMetronome() {
-        timer.cancel()
+        timer?.cancel()
     }
 
     /**
@@ -154,17 +168,28 @@ class MetronomeFragment : Fragment() {
         isActive = !isActive
     }
 
+    /**
+     * Stop playback of the metronome when the activity stop lifecycle method is called.
+     */
     override fun onStop() {
         super.onStop()
         stopMetronome()
     }
 
+    /**
+     * Save the bpm and active status of the metronome. If active,
+     * the metronome will continue playing through changes such as orientation change.
+     */
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean("isActive", isActive)
         outState.putInt("bpm", bpm)
     }
 
+    /**
+     * Check whether the metronome was active when state was saved previously.
+     * If active the metronome will continue playing through changes such as orientation change.
+     */
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         if (savedInstanceState != null) {

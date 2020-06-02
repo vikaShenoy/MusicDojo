@@ -33,6 +33,9 @@ enum class MainScreen(
     )
 }
 
+/**
+ * Return the screen with the given id.
+ */
 fun getMainScreenForMenuItem(menuItemId: Int): MainScreen? {
     for (mainScreen in MainScreen.values()) {
         if (mainScreen.menuItemId == menuItemId) {

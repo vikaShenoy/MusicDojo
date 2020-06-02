@@ -2,6 +2,9 @@ package com.example.musicdojo.util
 
 import com.example.musicdojo.model.Mode
 
+// Used in the spinner the user selects answers to questions from.
+// Translates the string interval name to the number of semitones the interval represents
+// to check if the answer to the question is correct.
 val INTERVALS = mapOf<String, Int>(
     "Minor 2nd" to 1,
     "Major 2nd" to 2,

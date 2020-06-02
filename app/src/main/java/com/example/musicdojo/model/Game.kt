@@ -5,17 +5,19 @@ import java.io.Serializable
 import java.util.*
 import kotlin.collections.ArrayList
 
+/**
+ * Class to hold ear training games.
+ */
 class Game(
     val name: String,
-    val ctx: Context,
+    private val ctx: Context,
     val mode: Mode = Mode.INTERVAL,
     val numQuestions: Int
 ): Serializable {
-    val questions: MutableList<Question> = generateQuestions()
+    private val questions: MutableList<Question> = generateQuestions()
     var currentQuestionIdx: Int = 0
     var score: Int = 0
 
-    // TODO - support other modes
     /**
      * Create the game's questions with random selection of pitches.
      * @param mode: game mode. Will be used to select chords in chord mode.
